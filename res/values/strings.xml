@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hello">Hello World, Android_jsonActivity!</string>
+    <string name="app_name">Android_json</string>
+    <string name="random_musics">http://www.xiami.com/app/android/rnd</string>
+    
+    <string name="fresh">刷新</string>
+    <string name="about">关于</string>
+    <string name="exit">退出</string>
+</resources>

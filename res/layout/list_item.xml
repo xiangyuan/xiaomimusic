@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:orientation="vertical"
+  android:layout_width="fill_parent"
+  android:layout_height="match_parent">
+  
+  <ImageView android:layout_width="100dp"
+  	android:layout_height="100dp"
+  	android:id="@+id/album_cover"
+  	/>
+  	
+  <TextView android:id="@+id/song_msg"
+  	android:layout_width="fill_parent"
+  	android:layout_height="50dp"
+  	android:layout_toRightOf="@id/album_cover"
+  	android:gravity="left"
+  	android:padding="6dp"
+  	android:textSize="16sp"
+  	android:text="Message"/>
+  <TextView android:id="@+id/size"
+  	android:layout_width="fill_parent"
+  	android:layout_height="50dp"
+  	android:layout_toRightOf="@id/album_cover"
+  	android:layout_below="@id/song_msg"
+  	android:textSize="12dp"
+  	android:padding="4dp"
+  	android:gravity="right|top"
+  	android:text="size"/>
+</RelativeLayout>
