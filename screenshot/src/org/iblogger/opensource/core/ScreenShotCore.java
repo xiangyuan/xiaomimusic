@@ -1,14 +1,12 @@
 package org.iblogger.opensource.core;
 
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import java.io.File;
 import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import com.android.ddmlib.AdbCommandRejectedException;
 import com.android.ddmlib.AndroidDebugBridge;
+import com.android.ddmlib.AndroidDebugBridge.IDeviceChangeListener;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
 import com.android.ddmlib.TimeoutException;
@@ -18,9 +16,13 @@ import com.android.ddmlib.TimeoutException;
  * @author LiYa
  * @verson 1.0 Feb 3, 2012 4:00:23 PM
  */
-public class ScreenShotCore {
+public class ScreenShotCore implements IDeviceChangeListener {
 
 	boolean landscape = false;
+	
+	public ScreenShotCore() {
+		getDevices();
+	}
 
 	private static void waitDeviceList(AndroidDebugBridge bridge) {
 		int count = 0;
@@ -37,27 +39,32 @@ public class ScreenShotCore {
 			}
 		}
 	}
-
-	public void test() throws IOException, TimeoutException,
-			AdbCommandRejectedException {
-
-		IDevice device;
+	
+	private IDevice[] devices = null;
+	
+	public void getDevices() {
 		AndroidDebugBridge.init(false);
 		AndroidDebugBridge bridge = AndroidDebugBridge.createBridge();
+		bridge.addDeviceChangeListener(this);
 		waitDeviceList(bridge);
+		devices = bridge.getDevices();
+	}
 
-		IDevice devices[] = bridge.getDevices();
-
-		device = devices[0];
+	/**
+	 * @return
+	 * @throws IOException
+	 * @throws TimeoutException
+	 * @throws AdbCommandRejectedException
+	 */
+	public Image screenShot() throws IOException, TimeoutException,
+			AdbCommandRejectedException {
+		IDevice device = devices[0];
 		RawImage rawScreen = device.getScreenshot();
+		BufferedImage image = null;
 		if (rawScreen != null) {
-
-			BufferedImage image = null;
-
+			System.out.println(rawScreen.width + " " + rawScreen.height);
 			int width2 = landscape ? rawScreen.height : rawScreen.width;
-
 			int height2 = landscape ? rawScreen.width : rawScreen.height;
-
 			if (image == null) {
 
 				image = new BufferedImage(width2, height2,
@@ -65,7 +72,6 @@ public class ScreenShotCore {
 				BufferedImage.TYPE_INT_RGB);
 
 			} else {
-
 				if (image.getHeight() != height2 || image.getWidth() != width2) {
 
 					image = new BufferedImage(width2, height2,
@@ -75,46 +81,39 @@ public class ScreenShotCore {
 				}
 
 			}
-
 			int index = 0;
-
 			int indexInc = rawScreen.bpp >> 3;
-
 			for (int y = 0; y < rawScreen.height; y++) {
-
 				for (int x = 0; x < rawScreen.width; x++, index += indexInc) {
-
 					int value = rawScreen.getARGB(index);
-
 					if (landscape)
-
 						image.setRGB(y, rawScreen.width - x - 1, value);
-
 					else
-
 						image.setRGB(x, y, value);
-
 				}
-
 			}
-
-			ImageIO.write((RenderedImage) image, "PNG", new File(
-					"/Users/liyajie/Desktop/test.jpg"));
+//			ImageIO.write((RenderedImage) image, "PNG", new File(
+//					"/Users/liyajie/Desktop/test.jpg"));
 		}
+		return (image);
+	}
+	
+	public void close() {
+		AndroidDebugBridge.terminate();
 	}
 
-	public static void main(String[] args) {
-		try {
-			new ScreenShotCore().test();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (AdbCommandRejectedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	@Override
+	public void deviceChanged(IDevice arg0, int arg1) {
+		
+	}
+
+	@Override
+	public void deviceConnected(IDevice arg0) {
+		
+	}
+
+	@Override
+	public void deviceDisconnected(IDevice arg0) {
+		
 	}
 }
